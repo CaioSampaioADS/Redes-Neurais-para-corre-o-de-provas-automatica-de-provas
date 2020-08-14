@@ -19,7 +19,7 @@ stopWords.append('a')
 #preparando dados de treino
 
 
-respostas = pd.read_csv("respostas.csv")
+respostas = pd.read_csv("respostasDireitoAmbiental.csv").dropna()
 
 
 respostasSplit=[]
@@ -29,10 +29,31 @@ for i in range(0, len(respostas['RESPOSTAS CORRETAS'])):
     respostasSplit.append(respostas['RESPOSTAS ERRADAS'][i].split())
     
     
+    
+'''codigo especial comentar depois
+
+for i in range(len(respostasSplit)):
+    if respostasSplit[i] == ['a']:
+        del respostasSplit[i]
+        
+fim codigo especial'''
+    
+    
 respostasCorretas = [respostas['RESPOSTAS CORRETAS'][i].split() for i in range(len(respostas['RESPOSTAS CORRETAS']))]
 
 respostasErradas = [respostas['RESPOSTAS ERRADAS'][i].split() for i in range(len(respostas['RESPOSTAS CORRETAS']))]
 
+
+'''codigo especial comentar depois
+
+auxiliar = []
+for i in range(len(respostasErradas)):
+   
+    if not respostasErradas[i] == ['a']:
+        auxiliar.append(respostasErradas[i])
+        
+respostasErradas = auxiliar
+fim codigo especial'''
 
 respostasTotais = []
 
@@ -76,7 +97,9 @@ for i in range(len(respostasErradas)):
 #preparando respostar à corrigir
     
 
-DataFrameTemp = pd.read_csv('paraCorrigir.csv')
+#DataFrameTemp = pd.read_csv('paraCorrigir.csv')
+DataFrameTemp = pd.read_csv('respostasDireitoAmbientalParaCorrigir.csv')
+
 
 paraCorrigir = []
 
@@ -181,7 +204,7 @@ from ann_visualizer.visualize import ann_viz;
 x = np.array(x)
 y = np.array(y)
 Classificador = Sequential()
-Classificador.add(Dense(units=109, activation = 'relu', input_dim = 109))
+Classificador.add(Dense(units=700, activation = 'relu', input_dim = 554))
 Classificador.add(Dense(units=200, activation = 'relu'))
 Classificador.add(Dense(units=200, activation = 'relu'))
 Classificador.add(Dense(units=200, activation = 'relu'))
@@ -190,7 +213,7 @@ Classificador.compile(optimizer='adam', loss='binary_crossentropy', metrics=['ac
 
 
 
-Classificador.fit(x, y, batch_size=10, nb_epoch = 1000)
+Classificador.fit(x, y, batch_size=10, nb_epoch = 100)
 
 acuraciaRedesNeuraisKeras = {'acertos': 0, 'erros': 0}
 
@@ -202,8 +225,6 @@ for i in range(len(paraCorrigir)):
     else:
         previsao[0][0] = 0 
         
-    
-    print(previsao[0][0])
 
     
         
@@ -212,11 +233,7 @@ for i in range(len(paraCorrigir)):
     else: 
         acuraciaRedesNeuraisKeras['erros'] += 1
         
-        
-ann_viz(Classificador, title="Artificial Neural network - Model Visualization")
 
-
-previsao = Classificador.predict(np.array([paraCorrigir[2]['resposta']]))
             
 
 
